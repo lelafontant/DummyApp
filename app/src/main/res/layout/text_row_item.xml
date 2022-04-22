@@ -1,15 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="@dimen/list_item_height"
-    android:layout_marginLeft="@dimen/margin_medium"
-    android:layout_marginRight="@dimen/margin_medium"
-    android:gravity="center_vertical">
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="0dp"
+    android:layout_marginRight="6dp"
+    android:layout_marginBottom="6dp"
+    android:padding="6dp" android:paddingLeft="12dp" android:paddingRight="12dp"
+    android:background="#FFEB3B"
+    android:gravity="center_vertical"
+    android:id="@+id/itemLayout">
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/txt_city"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/element_text"/>
+        android:text="@string/element_text"
+        android:textStyle="bold" />
 </FrameLayout>

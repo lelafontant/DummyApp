@@ -6,7 +6,7 @@ public class Weather {
     }
 
     public  String station;
-    public float temperature;
+    public String temperature;
     public float dewChill;
     public float windChill;
     public float pressure;

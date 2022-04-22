@@ -2,6 +2,7 @@ package com.example.dummyapp;
 
 import android.content.Context;
 import android.os.StrictMode;
+import android.widget.Toast;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -19,9 +20,9 @@ import okhttp3.Response;
 
 public class WebAPI {
     public String url;
-    public final String baseUrl = "https://dd.weather.gc.ca/citypage_weather/xml/AB/s0000001_e.xml";
+    public final String baseUrl = "https://dd.weather.gc.ca/citypage_weather/xml/";
     public final String cityUrl = "https://dd.weather.gc.ca/citypage_weather/docs/siteList.xml";
-    public XMLHandler handler;
+    public WeatherHandler handler;
     public CityHandler cityHandler;
 
     public WebAPI() {
@@ -54,12 +55,14 @@ public class WebAPI {
         return parser;
     }
 
-    public Weather getWeatherData() throws IOException {
-        String data = getData(this.baseUrl);
+    public Weather getWeatherData(String province, String code) throws IOException {
+        String url = this.baseUrl + province + "/" + code + "_e.xml";
+        System.out.println("IMPORTANT --- URL: " + url);
+        String data = getData(url);
 
         try {
             XmlPullParser parser = getParser(data);
-            this.handler = new XMLHandler(parser);
+            this.handler = new WeatherHandler(parser);
             int eventType = parser.getEventType();
 
             Stack<String> nodes = new Stack<>();
@@ -71,14 +74,10 @@ public class WebAPI {
                 } else if (eventType == XmlPullParser.START_TAG) {
                     if (handler.isValidNode(name)) {
                         nodes.push(name);
+                    } else if (!nodes.isEmpty()) {
+                        handler.parse(nodes.peek());
                     }
-
-                    if (nodes.isEmpty()) {
-                        break;
-                    }
-
-                    handler.parse(nodes.peek());
-                } else if (eventType == XmlPullParser.END_TAG) {
+                } else if (eventType == XmlPullParser.END_TAG && !nodes.isEmpty()) {
                     if (name.equalsIgnoreCase(nodes.peek())) {
                         nodes.pop();
                     }

@@ -2,6 +2,8 @@ package com.example.dummyapp;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.view.Menu;
@@ -13,27 +15,39 @@ import android.widget.Spinner;
 import android.widget.Toast;
 import android.widget.ViewAnimator;
 
+import com.google.android.flexbox.AlignItems;
+import com.google.android.flexbox.FlexDirection;
+import com.google.android.flexbox.FlexboxLayoutManager;
+import com.google.android.flexbox.JustifyContent;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
-public class MainActivity extends FragmentActivity implements AdapterView.OnItemSelectedListener {
-    String[] provinceListFr = new String[] {
-            "Québec", "Ontario", "Manitoba", "Saskatchewan", "Colombie-Britannique", "Ile du Prince", "Yukon"
+public class MainActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
+    String[] provinceListFr = new String[]{
+            "Québec", "Ontario", "Nouvelle-Écosse", "Nouveau-Brunswick", "Manitoba", "Colombie-Britannique",
+            "Ile-du-Prince-Édouard", "Saskatchewan", "Alberta", "Terre-Neuve-et-Labrador",
+            "Territoires du Nord-Ouest", "Yukon", "Nunavut"
     };
-    String[] provinceListEn = new String[] {
-            "Quebec", "Ontario", "Manitoba", "Saskatchewan", "British Columbia", "Ile du Prince", "Yukon"
+    String[] provinceListEn = new String[]{
+            "Quebec", "Ontario", "Nova Scotia", "New Brunswick", "Manitoba", "British Columbia",
+            "Prince Edward Island", "Saskatchewan", "Alberta", "Newfoundland and Labrador",
+            "Northwest Territories", "Yukon", "Nunavut"
     };
 
-    private String[] provinceCode = new String[] {
-            "QC", "ON", "MN", "SK", "BC", "IPE", "YK"
+    private String[] provinceCode = new String[]{
+            "QC", "ON", "NS", "NB", "MB", "BC", "PE", "SK", "AB", "NL", "NT", "YT", "NU"
     };
+
+    RecyclerView recyclerView;
+    CustomAdapter recyclerViewAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
 
         Spinner s = (Spinner) findViewById(R.id.spinner);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
@@ -42,6 +56,16 @@ public class MainActivity extends FragmentActivity implements AdapterView.OnItem
 
         s.setAdapter(adapter);
         s.setOnItemSelectedListener(this);
+
+        recyclerView = findViewById(R.id.lstCity);
+
+        recyclerViewAdapter = new CustomAdapter(this, new String[]{});
+        recyclerView.setAdapter(recyclerViewAdapter);
+        FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(this);
+        layoutManager.setFlexDirection(FlexDirection.ROW);
+        layoutManager.setJustifyContent(JustifyContent.FLEX_START);
+        layoutManager.setAlignItems(AlignItems.CENTER);
+        recyclerView.setLayoutManager(layoutManager);
     }
 
     @Override
@@ -51,15 +75,13 @@ public class MainActivity extends FragmentActivity implements AdapterView.OnItem
         WebAPI api = new WebAPI();
         try {
             List<City> cities = api.getCityList();
-            List<String> provinceList=  new ArrayList();
+            List<City> provinceCities = cities.stream().filter(city -> city.province.equalsIgnoreCase(code))
+                    .collect(Collectors.toList());
 
-            cities.forEach(city -> {
-                if (city.province.equalsIgnoreCase(code)) {
-                    provinceList.add(city.code);
-                }
-            });
 
-            Toast.makeText(adapterView.getContext(),"Number of city: " + provinceList.size() , Toast.LENGTH_LONG).show();
+            recyclerViewAdapter.setData(provinceCities);
+            recyclerViewAdapter.notifyDataSetChanged();
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -68,23 +90,5 @@ public class MainActivity extends FragmentActivity implements AdapterView.OnItem
     @Override
     public void onNothingSelected(AdapterView<?> adapterView) {
 
-    }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        return true;
-    }
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-
-
-        return super.onPrepareOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        return super.onOptionsItemSelected(item);
     }
 }

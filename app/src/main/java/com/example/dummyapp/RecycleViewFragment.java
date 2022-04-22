@@ -46,9 +46,7 @@ public class RecycleViewFragment extends Fragment {
 
 
 
-        mAdapter = new CustomAdapter(mDataset);
-        // Set CustomAdapter as the adapter for RecyclerView.
-        mRecyclerView.setAdapter(mAdapter);
+
         // END_INCLUDE(initializeRecyclerView)
 
         return rootView;
